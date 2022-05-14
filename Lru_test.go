@@ -27,7 +27,7 @@ func TestLRU(t *testing.T) {
 		lru.Set(k, v)
 		testData[k] = v
 
-		t.Log("size: ", lru.GetSize())
+		// t.Log("size: ", lru.GetSize())
 	}
 	for _, k := range lru.Keys() {
 		result, err := lru.Get(k)
@@ -42,16 +42,16 @@ func TestLRU(t *testing.T) {
 		// expire after 10 second
 
 		if i >= 10 {
-			lru.SetWithTimeout(k, v, time.Now().Add(2*time.Second).UnixMilli())
+			lru.SetWithTimeout(k, v, time.Now().Add(1*time.Second).UnixMilli())
 		} else {
-			lru.SetWithTimeout(k, v, time.Now().Add(10*time.Second).UnixMilli())
+			lru.SetWithTimeout(k, v, time.Now().Add(3*time.Second).UnixMilli())
 		}
 
 		testData[k] = v
 	}
 
 	fmt.Println("before size: ", lru.GetSize())
-	time.Sleep(3 * time.Second)
+	time.Sleep(1 * time.Second)
 
 	lru.Prune()
 
@@ -61,7 +61,7 @@ func TestLRU(t *testing.T) {
 		t.Error("timeout test error")
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(2 * time.Second)
 
 	lru.Prune()
 
