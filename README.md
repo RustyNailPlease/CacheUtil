@@ -1,10 +1,10 @@
 # Cache Utils
 
 
-Caches for simple use in memory.
+Cache implements for simple use in memory.
 
 - LRU
-- FIFO (todo)
+- FIFO
 
 
 #### install
