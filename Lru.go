@@ -120,7 +120,7 @@ func (c *LRUCache[T]) Contains(key string) bool {
 		}
 	}
 
-	return ok && expired
+	return ok && !expired
 }
 
 func (c *LRUCache[T]) Keys() []string {
