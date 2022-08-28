@@ -14,9 +14,10 @@ func TestFIFO(t *testing.T) {
 	fifo.Set("b", "s111_b")
 
 	v, err := fifo.Get("a")
-	if err != nil || *v != "s111_a" {
+	if err != nil || v != "s111_a" {
 		t.Error(err)
 	}
+
 	r := rand.New(rand.NewSource(time.Now().UnixMilli()))
 
 	testData := make(map[string]string)
@@ -31,7 +32,7 @@ func TestFIFO(t *testing.T) {
 	}
 	for _, k := range fifo.Keys() {
 		result, err := fifo.Get(k)
-		if testData[k] != *result || err != nil {
+		if testData[k] != result || err != nil {
 			t.Error("error", err)
 		}
 	}

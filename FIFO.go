@@ -13,8 +13,8 @@ type FIFOCache[T interface{}] struct {
 	LinkedList *internal.DoubleLinkedList[T]
 }
 
-func NewFIFO[T interface{}](cap int64) *FIFOCache[T] {
-	return &FIFOCache[T]{
+func NewFIFO[T interface{}](cap int64) FIFOCache[T] {
+	return FIFOCache[T]{
 		CacheInfo: CacheInfo[T]{
 			Capacity: int64(cap),
 			Size:     0,
@@ -66,20 +66,20 @@ func (c *FIFOCache[T]) SetWithTimeout(key string, value T, timeout int64) error 
 	return nil
 }
 
-func (c *FIFOCache[T]) Get(key string) (*T, error) {
+func (c *FIFOCache[T]) Get(key string) (tt T, err error) {
 	if item, ok := c.Data[key]; ok {
 		if item.ExpireTime > 0 {
 			if item.ExpireTime > time.Now().UnixMilli() {
-				return &item.Value, nil
+				return item.Value, nil
 			} else {
 				c.Remove(key)
-				return nil, errors.New("expired")
+				return tt, errors.New("expired")
 			}
 		} else {
-			return &item.Value, nil
+			return item.Value, nil
 		}
 	} else {
-		return nil, errors.New("not found")
+		return tt, errors.New("not found")
 	}
 }
 
