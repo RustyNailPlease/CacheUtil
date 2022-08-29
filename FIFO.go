@@ -43,14 +43,14 @@ func (c *FIFOCache[T]) Set(key string, value T) error {
 		}
 	}
 	// infinity
-	c.Data[key] = CacheItem[T]{key, value, -1}
+	c.Data[key] = CacheItem[T]{key, value, nil}
 	c.LinkedList.Add(key, value)
 	c.Size++
 	// todo
 	return nil
 }
 
-func (c *FIFOCache[T]) SetWithTimeout(key string, value T, timeout int64) error {
+func (c *FIFOCache[T]) SetWithTimeout(key string, value T, timeout time.Time) error {
 	if c.Fulled() {
 		c.Prune()
 		if c.Fulled() {
@@ -60,7 +60,7 @@ func (c *FIFOCache[T]) SetWithTimeout(key string, value T, timeout int64) error 
 			}
 		}
 	}
-	c.Data[key] = CacheItem[T]{key, value, timeout}
+	c.Data[key] = CacheItem[T]{key, value, &timeout}
 	c.LinkedList.Add(key, value)
 	c.Size++
 	return nil
@@ -68,8 +68,10 @@ func (c *FIFOCache[T]) SetWithTimeout(key string, value T, timeout int64) error 
 
 func (c *FIFOCache[T]) Get(key string) (tt T, err error) {
 	if item, ok := c.Data[key]; ok {
-		if item.ExpireTime > 0 {
-			if item.ExpireTime > time.Now().UnixMilli() {
+		// not infinity
+		if item.ExpireTime != nil {
+			// now xpire
+			if item.ExpireTime.After(time.Now()) {
 				return item.Value, nil
 			} else {
 				c.Remove(key)
@@ -87,7 +89,7 @@ func (c *FIFOCache[T]) Prune() (int, error) {
 	count := 0
 	for _, v := range c.Data {
 		// expired
-		if v.ExpireTime != -1 && v.ExpireTime <= time.Now().UnixMilli() {
+		if v.ExpireTime != nil && v.ExpireTime.Before(time.Now()) {
 			c.Remove(v.Key)
 			count++
 		}
@@ -110,8 +112,8 @@ func (c *FIFOCache[T]) Contains(key string) bool {
 	e, ok := c.Data[key]
 
 	expired := false
-	if e.ExpireTime != -1 {
-		if e.ExpireTime <= time.Now().UnixMilli() {
+	if e.ExpireTime != nil {
+		if e.ExpireTime.Before(time.Now()) {
 			expired = true
 		}
 	}

@@ -1,5 +1,7 @@
 package cacheutils
 
+import "time"
+
 // Cache interface
 type Cache[T interface{}] interface {
 	// GetCapacity returns the capacity of the cache.
@@ -33,5 +35,5 @@ type CacheInfo[T interface{}] struct {
 type CacheItem[T interface{}] struct {
 	Key        string
 	Value      T
-	ExpireTime int64 // milliseconds
+	ExpireTime *time.Time // milliseconds
 }

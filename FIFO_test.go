@@ -43,9 +43,9 @@ func TestFIFO(t *testing.T) {
 		// expire after 10 second
 
 		if i >= 10 {
-			fifo.SetWithTimeout(k, v, time.Now().Add(1*time.Second).UnixMilli())
+			fifo.SetWithTimeout(k, v, time.Now().Add(1*time.Second))
 		} else {
-			fifo.SetWithTimeout(k, v, time.Now().Add(3*time.Second).UnixMilli())
+			fifo.SetWithTimeout(k, v, time.Now().Add(3*time.Second))
 		}
 
 		testData[k] = v

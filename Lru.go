@@ -43,14 +43,14 @@ func (c *LRUCache[T]) Set(key string, value T) error {
 		}
 	}
 	// infinity
-	c.Data[key] = CacheItem[T]{key, value, -1}
+	c.Data[key] = CacheItem[T]{key, value, nil}
 	c.LinkedList.Add(key, value)
 	c.Size++
 	// todo
 	return nil
 }
 
-func (c *LRUCache[T]) SetWithTimeout(key string, value T, timeout int64) error {
+func (c *LRUCache[T]) SetWithTimeout(key string, value T, timeout time.Time) error {
 	if c.Fulled() {
 		c.Prune()
 		if c.Fulled() {
@@ -60,7 +60,7 @@ func (c *LRUCache[T]) SetWithTimeout(key string, value T, timeout int64) error {
 			}
 		}
 	}
-	c.Data[key] = CacheItem[T]{key, value, timeout}
+	c.Data[key] = CacheItem[T]{key, value, &timeout}
 	c.LinkedList.Add(key, value)
 	c.Size++
 	return nil
@@ -68,8 +68,8 @@ func (c *LRUCache[T]) SetWithTimeout(key string, value T, timeout int64) error {
 
 func (c *LRUCache[T]) Get(key string) (*T, error) {
 	if item, ok := c.Data[key]; ok {
-		if item.ExpireTime > 0 {
-			if item.ExpireTime > time.Now().UnixMilli() {
+		if item.ExpireTime != nil {
+			if item.ExpireTime.After(time.Now()) {
 				c.LinkedList.Delete(key)
 				c.LinkedList.Add(key, c.Data[key].Value)
 				return &item.Value, nil
@@ -91,7 +91,7 @@ func (c *LRUCache[T]) Prune() (int, error) {
 	count := 0
 	for _, v := range c.Data {
 		// expired
-		if v.ExpireTime != -1 && v.ExpireTime <= time.Now().UnixMilli() {
+		if v.ExpireTime != nil && v.ExpireTime.Before(time.Now()) {
 			c.Remove(v.Key)
 			count++
 		}
@@ -114,10 +114,8 @@ func (c *LRUCache[T]) Contains(key string) bool {
 	e, ok := c.Data[key]
 
 	expired := false
-	if e.ExpireTime != -1 {
-		if e.ExpireTime <= time.Now().UnixMilli() {
-			expired = true
-		}
+	if e.ExpireTime != nil && e.ExpireTime.Before(time.Now()) {
+		expired = true
 	}
 
 	return ok && !expired

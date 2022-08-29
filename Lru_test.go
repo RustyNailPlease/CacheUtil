@@ -42,9 +42,9 @@ func TestLRU(t *testing.T) {
 		// expire after 10 second
 
 		if i >= 10 {
-			lru.SetWithTimeout(k, v, time.Now().Add(1*time.Second).UnixMilli())
+			lru.SetWithTimeout(k, v, time.Now().Add(1*time.Second))
 		} else {
-			lru.SetWithTimeout(k, v, time.Now().Add(3*time.Second).UnixMilli())
+			lru.SetWithTimeout(k, v, time.Now().Add(3*time.Second))
 		}
 
 		testData[k] = v
