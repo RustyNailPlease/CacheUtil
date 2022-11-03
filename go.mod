@@ -1,3 +1,3 @@
-module github.com/SomeoneDeng/CacheUtil
+module github.com/RustyNailPlease/CacheUtil
 
-go 1.18
+go 1.19

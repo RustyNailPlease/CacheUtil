@@ -10,7 +10,7 @@ Cache implements for simple use in memory.
 #### install
 
 ``` bash
-go get github.com/SomeoneDeng/CacheUtil
+go get github.com/RustyNailPlease/CacheUtil
 ```
 
 ``` golang

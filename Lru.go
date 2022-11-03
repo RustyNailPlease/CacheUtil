@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/SomeoneDeng/CacheUtil/internal"
+	"github.com/RustyNailPlease/CacheUtil/internal"
 )
 
 type LRUCache[T interface{}] struct {
