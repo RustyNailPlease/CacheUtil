@@ -66,24 +66,24 @@ func (c *LRUCache[T]) SetWithTimeout(key string, value T, timeout time.Time) err
 	return nil
 }
 
-func (c *LRUCache[T]) Get(key string) (*T, error) {
+func (c *LRUCache[T]) Get(key string) (t T, err error) {
 	if item, ok := c.Data[key]; ok {
 		if item.ExpireTime != nil {
 			if item.ExpireTime.After(time.Now()) {
 				c.LinkedList.Delete(key)
 				c.LinkedList.Add(key, c.Data[key].Value)
-				return &item.Value, nil
+				return item.Value, nil
 			} else {
 				c.Remove(key)
-				return nil, errors.New("expired")
+				return t, errors.New("expired")
 			}
 		} else {
 			c.LinkedList.Delete(key)
 			c.LinkedList.Add(key, c.Data[key].Value)
-			return &item.Value, nil
+			return item.Value, nil
 		}
 	} else {
-		return nil, errors.New("not found")
+		return t, errors.New("not found")
 	}
 }
 

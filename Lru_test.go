@@ -14,7 +14,7 @@ func TestLRU(t *testing.T) {
 	lru.Set("b", "s111_b")
 
 	v, err := lru.Get("a")
-	if err != nil || *v != "s111_a" {
+	if err != nil || v != "s111_a" {
 		t.Error(err)
 	}
 	r := rand.New(rand.NewSource(time.Now().UnixMilli()))
@@ -31,7 +31,7 @@ func TestLRU(t *testing.T) {
 	}
 	for _, k := range lru.Keys() {
 		result, err := lru.Get(k)
-		if testData[k] != *result || err != nil {
+		if testData[k] != result || err != nil {
 			t.Error("error", err)
 		}
 	}
